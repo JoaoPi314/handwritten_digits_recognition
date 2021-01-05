@@ -85,3 +85,56 @@ class Network:
 	Esse método irá retornar as derivadas parciais de cada saída referente
 	a todas as entradas.
 	'''
+
+	def backpropagation(self, x, y):
+
+		gradiente_w = [np.zeros(w.shape()) for w in self.W]
+		gradiente_b = [np.zeros(b.shape()) for b in self.B]
+		
+		##Primeiro, vamos dar o passo pra frente(feedfoward)
+
+		A = [x]
+
+		a = x
+
+		for  b, w in zip(self.B, self.W):
+			u = np.dot(w, a) + b
+			a = sigmoide(u)
+			A.append(a)
+
+		##Agora, vamos dar a passada para trás (backward)
+		
+
+
+		#Para o último layer, calculamos o delta:
+		#delta = derivada do custo * derivada da sigmoide do output layer
+		#J(w) = Cross entropy function
+		#delta - previsão - valor real (isso pode ser provado matematicamente)
+		#fazendo a derivada da função de entropia cruzada
+
+		delta = A[-1] - y
+
+		gradiente_w[-1] = np.dot(delta, A[-2].transpose())
+
+		gradiente_b[-1] = delta
+
+
+		#Para os layers anteriores, vamos repetir o processo, sendo o
+		#penúltimo layer: delta(-2) = delta*W(-2)^T*sigmoide do penúltimo layer
+		#antepenúltimo layer: delta(-3) = delta(-2)*W(-3)^T*sigmoide do antepnultimo layer
+
+		for i in range(2, self.num_layers):
+			
+			delta = np.dot(self.W[-i+1].transpose(), delta) * (A[-i-1]) * (1 - A[-i-1])
+
+			gradiente_w[-i] = np.dot(delta, A[-i-1].transpose())
+			gradiente_b[-i] = delta
+
+		return (gradiente_w, gradiente_b)
+
+
+	'''
+	O próximo método será responsável por atualizar os mini_batches com os gradientes 
+	calculados no método backpropagation()
+	'''
+	
