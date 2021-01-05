@@ -7,6 +7,7 @@ para reconhecer dígitos manuscritos
 '''
 
 import numpy as np
+import random
 
 
 '''
@@ -159,6 +160,43 @@ class Network:
 	'''
 	O próximo método implementará o algoritmo MBGD (Mini-batch gradient descent)
 	Esse método é uma junção do BGD e do SGD, unindo o melhor dos dois algoritmos
+	training_data é uma lista de tuplas (x,y)
+	epochs é o número de iterações
+	eta é o learning rate
+	mini_batch_size é o tamanho das divisões do training_data
 
 	'''
+
+	def MBGD(self, training_data, epochs, eta, mini_batch_size):
+
+		n = len(training_data)
+
+		for i in range(epochs):
+			#Randomiza o training_data
+			random.shuffle(training_data)
+
+			mini_batches = []
+
+			for j in range(0, n, mini_batch_size):
+				mini_batches.append(training_data[j, j + mini_batch_size])
+
+
+			for mini_batch in mini_batches:
+				self.update_mb(mini_batch, eta)
+
+
+			print('Epoch {} ok'.format(i))
+
+
+
+	def predict(self, test_data):
+
+		test_results = [(np.argmax(self.feedforward(x)), y) for (x, y) in test_data]
+		accuracy = sum(int(x == y) for (x, y) in test_results)/len(test_results)
+
+		return (test_results, accuracy)
+
+
+
+
 
