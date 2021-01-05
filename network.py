@@ -137,4 +137,28 @@ class Network:
 	O próximo método será responsável por atualizar os mini_batches com os gradientes 
 	calculados no método backpropagation()
 	'''
-	
+	def update_mb(self, mini_batch, eta):
+
+		sum_grad_w = [np.zeros(w.shape()) for w in self.W]
+		sum_grad_b = [np.zeros(b.shape()) for b in self.B]
+
+		#Para cada x,y no mini_batch:
+		for x,y in mini_batch:
+			delta_grad_w, delta_grad_b = self.backpropagation(x,y)
+
+			sum_grad_w = [w + dw for w, dw in zip(sum_grad_w, delta_grad_w)]
+			sum_grad_b = [b + db for b, db in zip(sum_grad_b, delta_grad_b)]
+
+		#Agora, os valores dos pesos e bias serão atualizados na direção oposta
+		#do gradiente, ou seja, na direção em que o erro diminui
+
+		self.W = [w - (eta/len(mini_batch))*sw for w, sw in zip(self.W, sum_grad_w)]
+		self.B = [b - (eta/len(mini_batch))*sb for b, sb in zip(self.B, sum_grad_b)]
+
+
+	'''
+	O próximo método implementará o algoritmo MBGD (Mini-batch gradient descent)
+	Esse método é uma junção do BGD e do SGD, unindo o melhor dos dois algoritmos
+
+	'''
+
